@@ -1,0 +1,49 @@
+# Jobs for deploy
+#
+# =======================================Usage:
+# include:
+#   - project: 'sergei.miasnikov/school-ci'
+#     ref: main
+#     file:
+#       - '/gitlab-ci/deploy.kubectl.yml'
+# stages:
+#   - deploy
+
+deploy_dev:
+  stage: deploy
+  script:
+    - echo "Deploy to $ENV_NAME"
+  environment:
+    name: dev
+    url: https://dev.example.com
+  rules:
+    - if: $CI_COMMIT_TAG =~ /.*kubectl/
+
+deploy_prod:
+  stage: deploy
+  image: $DEPLOY_IMAGE
+  before_script:
+    - mkdir ~/.aws
+    - echo $AWS_CREDENTIALS | base64 -d > ~/.aws/credentials
+    - aws eks update-kubeconfig --name school --region eu-central-1
+  script:
+    - kubectl create secret docker-registry regcred -n $NAMESPACE
+      --docker-server=$MTR_REGISTRY
+      --docker-username=$MTR_USERNAME
+      --docker-password=$MTR_PASSWORD
+      --save-config
+      --dry-run=client
+      -o yaml | kubectl apply -f -
+    - kubectl create secret generic postgres-secret -n $NAMESPACE
+      --from-literal=password=$PG_PASS
+      --save-config
+      --dry-run=client
+      -o yaml | kubectl apply -f -
+    - kubectl apply -f ./deploy-kubectl -n $NAMESPACE
+    - echo "https://${NAMESPACE}.school.telekom-devops-school.de/dev-ops-school/index.html"
+  environment:
+    name: prod
+    url: https://prod.example.com
+  rules:
+    # - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_TAG =~ /.*kubectl/

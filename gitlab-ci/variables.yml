@@ -1,0 +1,18 @@
+# Variables for all CI jobs
+#
+# =======================================Usage:
+# include:
+#   - project: 'sergei.miasnikov/school-ci'
+#     ref: main
+#     file:
+#       - '/gitlab-ci/variables.yml'
+
+variables:
+  BUILD_JAR_IMAGE: "node:20-alpine3.18"
+  REGISTRY_MIRROR: "dockerhub.devops.telekom.de"
+  BACKEND_IMAGE: $MTR_REGISTRY/miasnikov/backend
+  FRONTEND_IMAGE: $MTR_REGISTRY/miasnikov/frontend
+  KANIKO_IMAGE: "gcr.io/kaniko-project/executor:v1.18.0-debug"
+  DOCKER_IMAGE: "docker:24.0.6"
+  DOCKER_DIND_IMAGE: "docker:24.0.6-dind"
+  DEPLOY_IMAGE: "$CI_REGISTRY_IMAGE/aws_helm_kubectl:latest"

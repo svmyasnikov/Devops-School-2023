@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - include:
+      file: ../sql/01-test.sql
+      relativeToChangelogFile: true
+  - include:
+      file: ../sql/02-drop-test.sql
+      relativeToChangelogFile: true
+  - include:
+      file: ../sql/03-init.sql
+      relativeToChangelogFile: true
+  - include:
+      file: ../sql/04-rename-m2m-table.sql
+      relativeToChangelogFile: true

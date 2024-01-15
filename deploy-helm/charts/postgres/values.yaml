@@ -1,0 +1,11 @@
+image: 
+  name: "postgres"
+  tag: "13.12-alpine3.18"
+port: 5432
+replicas: 1
+namespace: "miasnikov"
+db:
+  username: 
+  password:
+  name: "devschool"
+  

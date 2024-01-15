@@ -1,0 +1,84 @@
+# Jobs for deploy
+#
+# =======================================Usage:
+# include:
+#   - project: 'sergei.miasnikov/school-ci'
+#     ref: main
+#     file:
+#       - '/gitlab-ci/deploy.helm.yml'
+# stages:
+#   - package
+#   - deploy
+
+
+helm_package:
+  stage: package
+  image: $DEPLOY_IMAGE
+  script:
+    - VERSION=$(helm show chart deploy-helm/backend/ | yq .version | tr -d '\n')
+    - helm package deploy-helm/backend/
+    - curl --request POST 
+      --user gitlab-ci-token:$CI_JOB_TOKEN 
+      --form "chart=@backend-${VERSION}.tgz" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/helm/api/stable/charts"
+    - VERSION=$(helm show chart deploy-helm/frontend/ | yq .version | tr -d '\n')
+    - helm package deploy-helm/frontend/
+    - curl --request POST 
+      --user gitlab-ci-token:$CI_JOB_TOKEN 
+      --form "chart=@frontend-${VERSION}.tgz" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/helm/api/stable/charts"
+    - VERSION=$(helm show chart deploy-helm/postgres/ | yq .version | tr -d '\n')
+    - helm package deploy-helm/postgres/
+    - curl --request POST 
+      --user gitlab-ci-token:$CI_JOB_TOKEN 
+      --form "chart=@postgres-${VERSION}.tgz" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/helm/api/stable/charts"
+  rules:
+    - if: $CI_COMMIT_BRANCH != "main"
+      when: never
+    - changes:
+      - "deploy-helm/**/*"
+
+
+.deploy_helm:
+  stage: deploy
+  image: $DEPLOY_IMAGE
+  before_script:
+    - mkdir ~/.aws
+    - echo $AWS_CREDENTIALS | base64 -d > ~/.aws/credentials
+    - aws eks update-kubeconfig --name school --region eu-central-1
+  script:
+    - helm repo add --username gitlab-ci-token --password "$CI_JOB_TOKEN" gitlab-repo ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/helm/stable
+    - helm repo update
+    - helm upgrade postgres gitlab-repo/postgres --install -n $NAMESPACE --wait --timeout 2m 
+      --set namespace=$NAMESPACE 
+      --set pg_username=$PG_USER 
+      --set pg_password=$PG_PASS
+    - helm upgrade backend gitlab-repo/backend --install -n $NAMESPACE --wait --timeout 3m 
+      --set namespace=$NAMESPACE 
+      --set replicas=$REPLICAS 
+      --set pg_username=$PG_USER 
+      --set pg_password=$PG_PASS
+    - helm upgrade frontend gitlab-repo/frontend --install -n $NAMESPACE --wait --timeout 2m 
+      --set namespace=$NAMESPACE 
+      --set replicas=$REPLICAS
+  after_script:
+    - helm list -n $NAMESPACE
+    - kubectl get pods -n $NAMESPACE
+    - echo "https://${NAMESPACE}.school.telekom-devops-school.de/dev-ops-school/index.html"
+  environment:
+    name: $DEPLOY_ENV
+    url: https://${NAMESPACE}.school.telekom-devops-school.de/dev-ops-school/index.html
+
+
+deploy_prod:
+  extends: .deploy_helm
+  variables:
+    DEPLOY_ENV: prod
+  rules:
+    - if: $CI_COMMIT_TAG =~ /v.*/
+
+
+deploy_dev:
+  extends: .deploy_helm
+  variables:
+    DEPLOY_ENV: dev
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"

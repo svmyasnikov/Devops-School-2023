@@ -1,0 +1,62 @@
+# Jobs for building docker images with Kaniko and pushing them to Gitlab registry
+#
+# =======================================Usage:
+# include:
+#   - project: 'sergei.miasnikov/school-ci'
+#     ref: main
+#     file:
+#       - '/gitlab-ci/dockerize.kaniko.yml'
+# stages:
+#   - dockerize
+
+.dockerize:kaniko:
+  stage: dockerize
+  image:
+    name: $KANIKO_IMAGE
+    entrypoint: [""]
+  before_script:
+    - echo "{\"auths\":{\"$MTR_REGISTRY\":{\"username\":\"$MTR_USERNAME\",\"password\":\"$MTR_PASSWORD\"}}}" > /kaniko/.docker/config.json
+  script:
+    - /kaniko/executor
+      --skip-unused-stages
+      --target $DOCKERFILE_TARGET
+      --registry-mirror $REGISTRY_MIRROR
+      --context $CI_PROJECT_DIR
+      --dockerfile $CI_PROJECT_DIR/Dockerfile
+      --destination $IMAGE_NAME:$CI_COMMIT_SHORT_SHA
+      --destination $IMAGE_NAME:latest
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_TAG =~ /v.*/
+
+dockerize:kaniko:back:
+  extends: .dockerize:kaniko
+  variables:
+    DOCKERFILE_TARGET: backend
+    IMAGE_NAME: $BACKEND_IMAGE
+
+dockerize:kaniko:front:
+  extends: .dockerize:kaniko
+  variables:
+    DOCKERFILE_TARGET: frontend
+    IMAGE_NAME: $FRONTEND_IMAGE
+
+
+dockerize_deploy_image:
+  stage: dockerize
+  image:
+    name: $KANIKO_IMAGE
+    entrypoint: [""]
+  before_script:
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+  script:
+    - /kaniko/executor
+      --registry-mirror $REGISTRY_MIRROR
+      --context $CI_PROJECT_DIR/deploy-helm/aws_helm_kubectl
+      --dockerfile $CI_PROJECT_DIR/deploy-helm/aws_helm_kubectl/Dockerfile
+      --destination $DEPLOY_IMAGE
+  rules:
+    - if: $CI_COMMIT_BRANCH != "main"
+      when: never
+    - changes:
+      - "deploy-helm/aws_helm_kubectl/*"

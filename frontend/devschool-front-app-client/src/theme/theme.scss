@@ -1,0 +1,71 @@
+@import "fonts.scss";
+@import "bootstrap.scss";
+@import "datepicker.scss";
+
+div {
+    scrollbar-width: none; /* For Firefox */
+    -ms-overflow-style: none; /* For Internet Explorer and Edge */
+}
+
+div::-webkit-scrollbar {
+     width: 0px; /* For Chrome, Safari, and Opera */
+}
+
+html{
+    overflow: hidden;
+}
+
+$primary-color: #e20074;
+body {
+    font-family: 'Noto_Sans_JP', sans-serif;
+    font-size: 18px;
+}
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Noto_Sans_JP', sans-serif;
+}
+h2 {
+    margin: 0 20px 20px;
+}
+
+.btnGroup {
+    margin: 12px 6px 0;
+    padding:15px 0;
+    display: flex;
+    justify-content:flex-end;
+    button {
+        text-align:center;
+        vertical-align:middle;
+        cursor:pointer;
+        padding:6px 13px;
+        border:1px solid #ccc;
+        background:#ededed;
+        @include border-radius(4px);
+        font-weight:400;
+        white-space:nowrap;
+        text-decoration:none;
+        color: #4b4b4b;
+        min-width: 200px;
+        font-size: 14px;
+
+        & + button {
+            margin-left:12px;
+        }
+
+        &:hover {
+            background-color: #fefefe;
+            background-image: linear-gradient(to bottom, #fefefe, #e7e7e7);
+            background-repeat: repeat-x;
+        }
+        &.accent {
+            background:#e20074;
+            border-color:#b1035b;
+            color:#fff;
+            &:hover{
+                background:#d1006c;
+                & span {
+                    color:#fff;
+                }
+            }
+        }
+    }
+}

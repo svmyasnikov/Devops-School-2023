@@ -1,0 +1,101 @@
+@import '../../theme/theme';
+
+
+$magentaLight: #e20074;
+$magentaDark: #e20074;
+$transition: all .3s ease-in-out;
+
+.frame {
+  position: absolute;
+  left: 25%;
+  width: 1200px;
+  height: 600px;
+  margin-top: 0px;
+  margin-left: -200px;
+  border-radius: 2px;
+  overflow: hidden;
+  background: #fff;
+  color: #fff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.overview {
+  position: absolute;
+  width: 220px;
+  height: 320px;
+  top: 80px;
+  left: 50px;
+  background: #fff;
+  box-shadow: 2px 2px 4px 0 rgba(0,0,0,0.1);
+  border-radius: 3px;
+  border-color: #e20074;
+  border-style: solid;
+  border-width: 1px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: $transition;
+  color: black;
+
+  &.student {
+  }
+
+  &.course {
+    left: 290px;
+  }
+
+  &.school {
+    left: 530px;
+  }
+
+  &.mentor {
+    left: 770px;
+  }
+
+  &:hover {
+    transform: scale(1.1) translate3d(0,0,0);
+    box-shadow: 4px 4px 8px 0 rgba(0,0,0,0.1);
+
+    .title {
+      background: $magentaDark;
+    }
+
+    .operationText {
+      color: $magentaDark;
+    }
+
+  }
+
+  .title {
+    height: 72px;
+    text-align: center;
+    background: $magentaLight;
+    color: #fff;
+    font-weight: 600;
+    line-height: 72px;
+    font-size: 28px;
+    transition: $transition;
+  }
+
+  .operationText {
+    text-align: center;
+    font-size: 30px;
+    line-height: 30px;
+    font-weight: 700;
+    padding: 16px 0 17px 0;
+    transition: $transition;
+
+    span {
+      display: block;
+      font-size: 12px;
+      line-height: 12px;
+      font-weight: 400;
+    }
+  }
+
+  .line {
+    height: 3px;
+    background: #E4E4E4;
+    margin: 0 auto 7px auto;
+  }
+}

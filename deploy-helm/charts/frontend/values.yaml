@@ -1,0 +1,7 @@
+image: 
+  name: "mtr.devops.telekom.de/miasnikov/frontend"
+  tag: "latest"
+port: 8081
+replicas: 2
+namespace: "miasnikov"
+host_base_url: ".school.telekom-devops-school.de"

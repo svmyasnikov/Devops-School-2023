@@ -1,0 +1,31 @@
+@import '../../theme/theme';
+a {
+  color: white !important;
+}
+
+.magentaNav {
+  background-color: #e20074 !important;
+  color: white !important;
+  button {
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    padding: 6px 13px;
+    @include border-radius(4px);
+    font-weight: 400;
+    white-space: nowrap;
+    text-decoration: none;
+    min-width: 100px;
+    font-size: 14px;
+    background: #e20074;
+    border-color: #b1035b !important;
+    color: #fff;
+    &:hover {
+      background: #d1006c;
+      border-color: #b1035b !important;
+      & span {
+        color: #fff;
+      }
+    }
+  }
+}

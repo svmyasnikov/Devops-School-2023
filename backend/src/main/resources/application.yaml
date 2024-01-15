@@ -1,0 +1,28 @@
+server:
+  port: 8080
+
+service:
+  api:
+    version: 1.0.0
+
+spring:
+  application:
+    name: DevSchool-Application-2
+  datasource:
+    url: ${DATASOURCE_URL:jdbc:postgresql://localhost/devschool}
+    driverClassName: org.postgresql.Driver
+    username: ${DATASOURCE_USERNAME:postgres}
+    password: ${DATASOURCE_PASSWORD:postgres}
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          lob:
+            non_contextual_creation: true
+    show-sql: false
+
+
+base:
+  path: ${BASE_PATH:http://localhost:8080}

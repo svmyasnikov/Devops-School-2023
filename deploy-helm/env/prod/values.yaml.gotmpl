@@ -1,0 +1,9 @@
+namespace: {{ .StateValues.namespace | quote }}
+imageCredentials:
+  registry: {{ requiredEnv "MTR_REGISTRY" | quote }}
+  username: {{ requiredEnv "MTR_USERNAME" | quote }}
+  password: {{ requiredEnv "MTR_PASSWORD" | quote }}
+db:
+  username: {{ requiredEnv "PG_USER" | quote }}
+  password: {{ requiredEnv "PG_PASS" | quote }}
+  name: "devschool"

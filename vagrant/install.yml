@@ -1,0 +1,39 @@
+---
+- name: deploy
+  hosts: all
+  gather_facts: false
+  become: true
+
+  tasks:
+    - name: "Update and upgrade apt packages"
+      ansible.builtin.apt:
+        upgrade: yes
+        update_cache: yes
+        cache_valid_time: 86400
+
+    - name: "Install apt packages"
+      ansible.builtin.apt:
+        name:
+          - awscli
+          - ansible
+          - gnupg
+        state: present
+
+    - name: "Add hashicorp apt-key"
+      ansible.builtin.apt_key: 
+        url: https://apt.releases.hashicorp.com/gpg
+        state: present 
+
+    - name: "Add hashicorp apt repository"
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=arm64] https://apt.releases.hashicorp.com bookworm main"
+        state: present
+        filename: hashicorp
+        update_cache: yes
+
+    - name: "Install terraform"
+      ansible.builtin.apt: 
+        name:
+          - terraform
+        state: present
+        update_cache: yes

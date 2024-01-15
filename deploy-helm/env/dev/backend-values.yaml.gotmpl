@@ -1,0 +1,6 @@
+image: 
+  name: "mtr.devops.telekom.de/miasnikov/backend"
+  tag: {{ requiredEnv "CI_COMMIT_SHORT_SHA" | quote }}
+port: 8080
+replicas: 1
+datasource_url: "jdbc:postgresql://postgres:5432/"

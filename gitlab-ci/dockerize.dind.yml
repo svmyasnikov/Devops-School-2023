@@ -1,0 +1,38 @@
+# Job for building docker images with DIND and pushing them to Gitlab registry
+#
+# =======================================Usage:
+# include:
+#   - project: 'sergei.miasnikov/school-ci'
+#     ref: main
+#     file:
+#       - '/gitlab-ci/dockerize.dind.yml'
+# stages:
+#   - dockerize
+
+dockerize:dind:
+  stage: dockerize
+  image: $DOCKER_IMAGE
+  services:
+    - name: $DOCKER_DIND_IMAGE
+      command: ["--registry-mirror=https://$REGISTRY_MIRROR"]
+      alias: docker
+  variables:
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: "/certs"
+  script:
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+    - docker pull $BACKEND_IMAGE:latest || true
+    - docker pull $FRONTEND_IMAGE:latest || true
+    - docker build --target backend
+      --cache-from $BACKEND_IMAGE:latest
+      --tag $BACKEND_IMAGE:dind-$CI_COMMIT_SHORT_SHA
+      --tag $BACKEND_IMAGE:latest .
+    - docker build --target frontend
+      --cache-from $FRONTEND_IMAGE:latest
+      --tag $FRONTEND_IMAGE:dind-$CI_COMMIT_SHORT_SHA
+      --tag $FRONTEND_IMAGE:latest .
+    - docker push --all-tags $BACKEND_IMAGE
+    - docker push --all-tags $FRONTEND_IMAGE
+  tags:
+    - run_sysbox
+  when: manual

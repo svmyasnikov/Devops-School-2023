@@ -1,0 +1,24 @@
+@import '../../theme/theme';
+
+.openDialog{
+    display: block;
+    padding-right: 17px;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+select {
+  flex: 1 1 auto;
+}
+
+.editButton {
+  min-width: 100px !important;
+}
+
+div {
+  scrollbar-width: none; /* For Firefox */
+  -ms-overflow-style: none; /* For Internet Explorer and Edge */
+}
+
+div::-webkit-scrollbar {
+  width: 0px; /* For Chrome, Safari, and Opera */
+}

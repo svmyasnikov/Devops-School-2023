@@ -1,0 +1,51 @@
+helmDefaults:
+  atomic: true
+  wait: true
+  timeout: 300
+
+environments:
+  dev:
+    values:
+      - namespace: miasnikov-dev
+  prod:
+    values:
+      - namespace: miasnikov-prod
+
+releases:
+  - name: postgres
+    chart: ./charts/postgres
+    namespace: {{ .StateValues.namespace | quote }}
+    createNamespace: true
+    labels:
+      app: postgres
+    missingFileHandler: Error
+    values:
+      - "./env/{{ .Environment.Name }}/values.yaml.gotmpl"
+      - "./env/{{ .Environment.Name }}/postgres-values.yaml.gotmpl"
+
+  - name: backend
+    chart: ./charts/backend
+    needs:
+      - postgres
+    namespace: {{ .StateValues.namespace | quote }}
+    createNamespace: true
+    labels:
+      app: backend
+    missingFileHandler: Error
+    values:
+      - "./env/{{ .Environment.Name }}/values.yaml.gotmpl"
+      - "./env/{{ .Environment.Name }}/backend-values.yaml.gotmpl"
+
+  - name: frontend
+    needs:
+      - postgres
+      - backend
+    chart: ./charts/frontend
+    namespace: {{ .StateValues.namespace | quote }}
+    createNamespace: true
+    labels:
+      app: frontend
+    missingFileHandler: Error
+    values:
+      - "./env/{{ .Environment.Name }}/values.yaml.gotmpl"
+      - "./env/{{ .Environment.Name }}/frontend-values.yaml.gotmpl"

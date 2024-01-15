@@ -1,0 +1,101 @@
+plugins {
+    id 'java'
+    id "org.hidetake.swagger.generator" version "2.18.2"
+    id 'org.springframework.boot' version "2.3.3.RELEASE"
+}
+
+group 'ru.tsystems'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+def springBootVersion = "2.3.3.RELEASE"
+def lombokVersion = "1.18.12"
+def postgresDriverVersion = "42.2.16"
+def liquibasePluginVersion = "2.0.4"
+def liquibaseCoreVersion = "4.2.0"
+def jaxbApiVersion = "2.4.0-b180830.0359"
+def javaxValidationVersion = "2.0.1.Final"
+def hibernateValidatorVersion = "6.1.5.Final"
+def springfoxSwaggerVersion = "2.7.0"
+def modelMapperVersion = "2.3.8"
+def h2Version = "1.4.200"
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+springBoot {
+    mainClassName = 'ru.tsystems.devschool.DevSchoolApplication'
+}
+
+bootRun{
+    jvmArgs "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8787"
+}
+
+dependencies {
+    //    spring
+    implementation("org.springframework.boot:spring-boot-starter:${springBootVersion}")
+    implementation("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
+    implementation("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
+    implementation("org.springframework.boot:spring-boot-starter-jdbc:${springBootVersion}")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}")
+//    database
+    implementation("org.postgresql:postgresql:${postgresDriverVersion}")
+    implementation("org.liquibase:liquibase-gradle-plugin:${liquibasePluginVersion}")
+    implementation("org.liquibase:liquibase-core:${liquibaseCoreVersion}")
+//    validation
+    implementation("javax.validation:validation-api:${javaxValidationVersion}")
+    implementation("org.hibernate.validator:hibernate-validator:${hibernateValidatorVersion}")
+//    swagger
+    implementation 'io.swagger:swagger-annotations:1.5.22'
+    swaggerCodegen 'io.swagger:swagger-codegen-cli:2.4.4'             // Swagger Codegen V2
+    implementation("io.springfox:springfox-swagger2:${springfoxSwaggerVersion}")
+    implementation("io.springfox:springfox-swagger-ui:${springfoxSwaggerVersion}")
+//    other
+    implementation("org.projectlombok:lombok:${lombokVersion}")
+    runtimeOnly("javax.xml.bind:jaxb-api:${jaxbApiVersion}")
+    implementation("org.modelmapper:modelmapper:${modelMapperVersion}")
+    annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+//    test
+    implementation group: "junit", name: "junit", version: "4.12"
+    implementation("com.h2database:h2:${h2Version}")
+}
+
+swaggerSources {
+    server {
+        inputFile = file("$rootDir/conf/swagger/devscool-app.yaml")
+        code {
+            language = 'spring'
+            library = 'spring-boot'
+            configFile = file("$rootDir/conf/swagger/config.json")
+        }
+    }
+    client {
+        inputFile = file("$rootDir/conf/swagger/devscool-app.yaml")
+        code {
+            language = 'java'
+            library = 'resttemplate'
+            configFile = file("$rootDir/conf/swagger/config.json")
+        }
+    }
+}
+task copySwaggerResouces(type: Copy) {
+    dependsOn(swaggerSources.server.code)
+    dependsOn(swaggerSources.client.code)
+    from "$buildDir/swagger-code-server"
+    into "$buildDir/swagger-code-client"
+}
+task cleanDuplicateClasses(type: Delete) {
+    dependsOn(copySwaggerResouces)
+    delete "$buildDir/swagger-code-server"
+}
+
+compileJava.dependsOn swaggerSources.server.code
+compileJava.dependsOn swaggerSources.client.code
+compileJava.dependsOn copySwaggerResouces
+compileJava.dependsOn cleanDuplicateClasses
+
+sourceSets.main.java.srcDir "${swaggerSources.client.code.outputDir}/src/main/java"
+sourceSets.main.java.srcDir "${swaggerSources.server.code.outputDir}/src/main/java"

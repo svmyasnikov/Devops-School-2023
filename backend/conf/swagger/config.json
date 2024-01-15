@@ -1,0 +1,10 @@
+{
+  "apiPackage": "ru.tsystems.devschool.api",
+  "modelPackage": "ru.tsystems.devschool.model",
+  "invokerPackage": "ru.tsystems.devschool.invoker",
+  "dateLibrary": "java8",
+  "delegatePattern": "true",
+  "serializableModel": "true",
+  "generateApiTests": "false",
+  "generateModelTests": "false"
+}

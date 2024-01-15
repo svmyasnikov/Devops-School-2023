@@ -1,0 +1,27 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
+ext {
+    yarnCommand = Os.isFamily(Os.FAMILY_WINDOWS) ? 'yarn.cmd' : 'yarn'
+}
+
+clean {
+    delete "production/"
+}
+
+task yarnInstall(type: Exec) {
+    commandLine yarnCommand, 'install', '--ignore-optional'
+}
+
+task yarnBundle(type: Exec, dependsOn: yarnInstall) {
+    inputs.dir file("src/")
+    commandLine yarnCommand, 'run', 'build'
+    outputs.dir file("production/")
+}
+
+dependencies {
+    'default' files(yarnBundle)
+}
+
+jar {
+    from yarnBundle
+}

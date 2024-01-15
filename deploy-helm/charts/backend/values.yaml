@@ -1,0 +1,13 @@
+image: 
+  name: "mtr.devops.telekom.de/miasnikov/backend"
+  tag: "latest"
+port: 8080
+replicas: 2
+namespace: "miasnikov"
+pg_username: 
+pg_password: 
+datasource_url: "jdbc:postgresql://postgres:5432/devschool"
+imageCredentials:
+  registry: 
+  username: 
+  password: 

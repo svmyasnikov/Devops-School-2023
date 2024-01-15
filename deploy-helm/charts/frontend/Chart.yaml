@@ -1,0 +1,10 @@
+apiVersion: v2
+name: frontend
+description: A Helm chart for release frontend
+type: application
+version: 0.3.0
+appVersion: "0.3.0"
+
+maintainers:
+  - name: Sergei Miasnikov
+    email: sergei.miasnikov@telekom.com

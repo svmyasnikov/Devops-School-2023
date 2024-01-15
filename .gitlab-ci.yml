@@ -1,0 +1,13 @@
+include:
+  - project: 'sergei.miasnikov/school-ci'
+    ref: main
+    file:
+      - '/gitlab-ci/variables.yml'
+      - '/gitlab-ci/build-jar.yml'
+      - '/gitlab-ci/dockerize.kaniko.yml'
+      - '/gitlab-ci/deploy.helmfile.yml'
+
+stages:
+  - build
+  - dockerize
+  - deploy

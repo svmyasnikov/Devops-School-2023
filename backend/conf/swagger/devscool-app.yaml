@@ -1,0 +1,516 @@
+swagger: '2.0'
+info:
+  version: 1.1.0
+  title: Second Devops School Application
+  description: "Second Devops School Application API"
+host: "localhost:8080"
+tags:
+  - name: Course
+  - name: Mentor
+  - name: School
+  - name: Student
+paths:
+  /api/course:
+    post:
+      tags:
+        - "Course"
+      operationId: "createCourse"
+      summary: "Create a course"
+      description: "API for creating a new Course"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "CourseDto"
+          description: "CourseDto"
+          required: true
+          schema:
+            $ref: "#/definitions/CourseDto"
+      responses:
+        201:
+          description: "Successfully created"
+          schema:
+            $ref: "#/definitions/CourseDto"
+        400:
+          description: "Bad request"
+          schema:
+            $ref: '#/definitions/ErrorDto'
+        500:
+          description: "Internal server error"
+          schema:
+            $ref: '#/definitions/ErrorDto'
+  /api/course/{id}:
+    get:
+      tags:
+        - "Course"
+      operationId: "getCourse"
+      summary: "Get course by id"
+      description: "API for getting course by id"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          type: "integer"
+          format: "int64"
+      responses:
+        200:
+          description: "Successfully found"
+          schema:
+            $ref: "#/definitions/CourseDto"
+        400:
+          description: "Bad request"
+          schema:
+            $ref: '#/definitions/ErrorDto'
+        404:
+          description: "Not found"
+          schema:
+            $ref: '#/definitions/ErrorDto'
+        500:
+          description: "Internal server error"
+          schema:
+            $ref: '#/definitions/ErrorDto'
+  /api/course/search:
+    get:
+      tags:
+        - "Course"
+      operationId: "getAllCourses"
+      summary: "Gets list of courses"
+      description: "API for getting all courses"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Successfully get"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/CourseDto"
+        400:
+          description: "Bad request"
+          schema:
+            $ref: '#/definitions/ErrorDto'
+        500:
+          description: "Internal server error"
+          schema:
+            $ref: '#/definitions/ErrorDto'
+  /api/school:
+    post:
+      tags:
+        - "School"
+      operationId: "createSchool"
+      summary: "Create a School"
+      description: "API for creating a new School"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "SchoolDto"
+          description: "SchoolDto"
+          required: true
+          schema:
+            $ref: "#/definitions/SchoolDto"
+      responses:
+        201:
+          description: "Successfully created"
+          schema:
+            $ref: "#/definitions/SchoolDto"
+        400:
+          description: "Bad request"
+          schema:
+            $ref: '#/definitions/ErrorDto'
+        500:
+          description: "Internal server error"
+          schema:
+            $ref: '#/definitions/ErrorDto'
+  /api/school/{id}:
+    get:
+      tags:
+        - "School"
+      operationId: "getSchool"
+      summary: "Get School by id"
+      description: "API for getting School by id"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          type: "integer"
+          format: "int64"
+      responses:
+        200:
+          description: "Successfully found"
+          schema:
+            $ref: "#/definitions/SchoolDto"
+        400:
+          description: "Bad request"
+          schema:
+            $ref: '#/definitions/ErrorDto'
+        404:
+          description: "Not found"
+          schema:
+            $ref: '#/definitions/ErrorDto'
+        500:
+          description: "Internal server error"
+          schema:
+            $ref: '#/definitions/ErrorDto'
+  /api/school/search:
+    get:
+      tags:
+        - "School"
+      operationId: "getAllSchools"
+      summary: "Gets list of Schools"
+      description: "API for getting all Schools"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Successfully get"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/SchoolDto"
+        400:
+          description: "Bad request"
+          schema:
+            $ref: '#/definitions/ErrorDto'
+        500:
+          description: "Internal server error"
+          schema:
+            $ref: '#/definitions/ErrorDto'
+  /api/mentor:
+    post:
+      tags:
+        - "Mentor"
+      operationId: "createMentor"
+      summary: "Create a Mentor"
+      description: "API for creating a new Mentor"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "MentorDto"
+          description: "MentorDto"
+          required: true
+          schema:
+            $ref: "#/definitions/MentorDto"
+      responses:
+        201:
+          description: "Successfully created"
+          schema:
+            $ref: "#/definitions/MentorDto"
+        400:
+          description: "Bad request"
+          schema:
+            $ref: '#/definitions/ErrorDto'
+        500:
+          description: "Internal server error"
+          schema:
+            $ref: '#/definitions/ErrorDto'
+  /api/mentor/{id}:
+    get:
+      tags:
+        - "Mentor"
+      operationId: "getMentor"
+      summary: "Get Mentor by id"
+      description: "API for getting Mentor by id"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          type: "integer"
+          format: "int64"
+      responses:
+        200:
+          description: "Successfully found"
+          schema:
+            $ref: "#/definitions/MentorDto"
+        400:
+          description: "Bad request"
+          schema:
+            $ref: '#/definitions/ErrorDto'
+        404:
+          description: "Not found"
+          schema:
+            $ref: '#/definitions/ErrorDto'
+        500:
+          description: "Internal server error"
+          schema:
+            $ref: '#/definitions/ErrorDto'
+  /api/mentor/search:
+    get:
+      tags:
+        - "Mentor"
+      operationId: "getAllMentors"
+      summary: "Gets list of Mentors"
+      description: "API for getting all Mentors"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Successfully get"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/MentorDto"
+        400:
+          description: "Bad request"
+          schema:
+            $ref: '#/definitions/ErrorDto'
+        500:
+          description: "Internal server error"
+          schema:
+            $ref: '#/definitions/ErrorDto'
+  /api/student:
+    post:
+      tags:
+        - "Student"
+      operationId: "createStudent"
+      summary: "Create a Studen"
+      description: "API for creating a new Studen"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "StudentDto"
+          description: "StudentDto"
+          required: true
+          schema:
+            $ref: "#/definitions/StudentDto"
+      responses:
+        201:
+          description: "Successfully created"
+          schema:
+            $ref: "#/definitions/StudentDto"
+        400:
+          description: "Bad request"
+          schema:
+            $ref: '#/definitions/ErrorDto'
+        409:
+          description: "Conflict"
+          schema:
+            $ref: '#/definitions/ErrorDto'
+        500:
+          description: "Internal server error"
+          schema:
+            $ref: '#/definitions/ErrorDto'
+  /api/student/{id}:
+    get:
+      tags:
+        - "Student"
+      operationId: "getStudent"
+      summary: "Get Student by id"
+      description: "API for getting Student by id"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          type: "integer"
+          format: "int64"
+      responses:
+        200:
+          description: "Successfully found"
+          schema:
+            $ref: "#/definitions/StudentDto"
+        400:
+          description: "Bad request"
+          schema:
+            $ref: '#/definitions/ErrorDto'
+        404:
+          description: "Not found"
+          schema:
+            $ref: '#/definitions/ErrorDto'
+        500:
+          description: "Internal server error"
+          schema:
+            $ref: '#/definitions/ErrorDto'
+  /api/student/search:
+    post:
+      tags:
+        - "Student"
+      operationId: "getStudentsByCriteria"
+      summary: "Gets list of Students by criteria"
+      description: "API for searching Students by criteria"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "SearchStudentsDto"
+          required: true
+          schema:
+            $ref: "#/definitions/SearchStudentsDto"
+      responses:
+        200:
+          description: "Successfully get"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/StudentDto"
+        400:
+          description: "Bad request"
+          schema:
+            $ref: '#/definitions/ErrorDto'
+        500:
+          description: "Internal server error"
+          schema:
+            $ref: '#/definitions/ErrorDto'
+definitions:
+  CourseDto:
+    type: "object"
+    required:
+      - "name"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+        description: "Internal (from database) id of Course"
+      name:
+        type: "string"
+        description: "Name of Course"
+      version:
+        type: "integer"
+        format: "int64"
+        description: "Version of object"
+  MentorDto:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+        description: "Internal (from database) id of Mentor"
+      firstName:
+        type: "string"
+        description: "First name"
+      lastName:
+        type: "string"
+        description: "Last name"
+      email:
+        type: "string"
+        description: "Email"
+      phone:
+        type: "string"
+        description: "Phone nubmer"
+      version:
+        type: "integer"
+        format: "int64"
+        description: "Version of object"
+  SchoolDto:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+        description: "Internal (from database) id of Mentor"
+      number:
+        type: "integer"
+        format: "int32"
+        description: "Ordinal number of School"
+      startDate:
+        type: "string"
+        format: "date"
+        description: "Start date"
+      endDate:
+        type: "string"
+        format: "date"
+        description: "End date"
+      version:
+        type: "integer"
+        format: "int64"
+        description: "Version of object"
+  StudentDto:
+    type: "object"
+    required:
+      - "firstName"
+      - "lastName"
+      - "phone"
+      - "school"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+        description: "Internal (from database) id of Mentor"
+      firstName:
+        type: "string"
+        description: "First name"
+      lastName:
+        type: "string"
+        description: "Last name"
+      email:
+        type: "string"
+        description: "Email"
+      phone:
+        type: "string"
+        description: "Phone nubmer"
+      mentor:
+        description: "Mentor of student"
+        $ref: "#/definitions/MentorDto"
+      school:
+        description: "School number"
+        $ref: "#/definitions/SchoolDto"
+      courses:
+        type: "array"
+        items:
+          $ref: "#/definitions/CourseRegistrationDto"
+      version:
+        type: "integer"
+        format: "int64"
+        description: "Version of object"
+  CourseRegistrationDto:
+    type: "object"
+    properties:
+      course:
+        description: "Course"
+        $ref: "#/definitions/CourseDto"
+      mark:
+        type: "integer"
+        format: "int32"
+        description: "Mark for course"
+      version:
+        type: "integer"
+        format: "int64"
+        description: "Version of object"
+  SearchStudentsDto:
+    type: "object"
+    properties:
+      schoolNumber:
+        type: "integer"
+        format: "int32"
+        description: "Number of school"
+  ErrorDto:
+    required:
+      - error
+    properties:
+      error:
+        type: string
+        enum:
+          - CONFLICT
+          - BAD_REQUEST
+          - NOT_FOUND
+          - INTERNAL_SERVER_ERROR
+        description: |
+          Error codes:
+          * CONFLICT - Attempt to save not unique data.
+          * NOT_FOUND - Data was not found.
+          * BAD_REQUEST - incorrect value in request params.
+          * INTERNAL_SERVER_ERROR - problem on server side.
+      error_description:
+        description: Description of error.
+        type: string
+

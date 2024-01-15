@@ -1,0 +1,48 @@
+# Jobs for deploy
+#
+# =======================================Usage:
+# include:
+#   - project: 'sergei.miasnikov/school-ci'
+#     ref: main
+#     file:
+#       - '/gitlab-ci/deploy.helmfile.yml'
+# stages:
+#   - deploy
+
+.deploy_helm:
+  stage: deploy
+  image: $DEPLOY_IMAGE
+  script:
+    - mkdir ~/.aws
+    - echo $AWS_CREDENTIALS | base64 -d > ~/.aws/credentials
+    - aws eks update-kubeconfig --name school --region eu-central-1
+    - helmfile --file deploy-helm/Helmfile --environment $DEPLOY_ENV apply
+  after_script:
+    - helm list -n $NAMESPACE
+    - kubectl get pods -n $NAMESPACE
+    - echo "https://${NAMESPACE}.school.telekom-devops-school.de/dev-ops-school/index.html"
+  environment:
+    name: $DEPLOY_ENV
+    url: https://${NAMESPACE}.school.telekom-devops-school.de/dev-ops-school/index.html
+
+
+deploy_dev:
+  extends: .deploy_helm
+  variables:
+    DEPLOY_ENV: dev
+    NAMESPACE: miasnikov-dev
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+
+deploy_prod:
+  extends: .deploy_helm
+  variables:
+    DEPLOY_ENV: prod
+    NAMESPACE: miasnikov-prod
+  before_script:
+    - yq e -i ".appVersion = \"${CI_COMMIT_TAG#v}\"" deploy-helm/charts/backend/Chart.yaml
+    - yq e -i ".appVersion = \"${CI_COMMIT_TAG#v}\"" deploy-helm/charts/frontend/Chart.yaml
+    - yq e -i ".appVersion = \"${CI_COMMIT_TAG#v}\"" deploy-helm/charts/postgres/Chart.yaml
+  rules:
+    - if: $CI_COMMIT_TAG =~ /v.*/

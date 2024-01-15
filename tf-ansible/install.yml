@@ -1,0 +1,95 @@
+---
+- name: deploy
+  hosts: all
+  gather_facts: false
+  become: true
+  vars: 
+    gitlab_token: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              63353738386137616166383436663339313335376332333730613430666638663231333932363834
+              6331326532383465366639333366656133393331373531350a613038386339636436363637656262
+              65643539376238323730306664653336376261353336633931313061333439356665643961366138
+              3736623032363432370a346435383737303766643533326533376166663861346466363862373131
+              30626431373331626632343932663235653363353532333562383033616230323533
+
+  tasks:
+    - name: "Update and upgrade apt packages"
+      ansible.builtin.apt:
+        upgrade: yes
+        update_cache: yes
+        cache_valid_time: 86400
+
+    - name: "Install apt packages"
+      ansible.builtin.apt:
+        name:
+          - gnupg
+        state: present
+
+    - name: "Add docker apt-key"
+      ansible.builtin.apt_key: 
+        url: https://download.docker.com/linux/debian/gpg
+        state: present 
+
+    - name: "Add docker apt repository"
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/debian bookworm stable"
+        state: present
+        filename: docker
+        update_cache: yes
+
+    - name: "Install docker"
+      ansible.builtin.apt: 
+        name:
+          - docker-ce 
+          - docker-ce-cli 
+          - containerd.io
+        state: present
+
+    - name: Add gitlab-runner user to docker group
+      ansible.builtin.user:
+        name: gitlab-runner
+        append: yes
+        groups: docker
+
+    - name: "Add gitlab-runner apt-key"
+      ansible.builtin.apt_key: 
+        url: https://packages.gitlab.com/runner/gitlab-runner/gpgkey
+        state: present 
+
+    - name: "Add gitlab-runner apt repository"
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64] https://packages.gitlab.com/runner/gitlab-runner/debian/ bookworm main"
+        state: present
+        filename: docker
+        update_cache: yes
+
+    - name: "Install gitlab-runner"
+      ansible.builtin.apt: 
+        name:
+          - gitlab-runner 
+        state: present
+
+    - name: "Check if runner is already registered"
+      ansible.builtin.command: gitlab-runner verify --name aws_docker_runner
+      register: runner_registered
+      ignore_errors: true
+      changed_when: runner_registered.rc != 0
+
+    - name: Register gitlab docker runner
+      ansible.builtin.command: |
+        gitlab-runner register \
+        --non-interactive \
+        --name "aws_docker_runner" \
+        --url "https://gitlab.devops.telekom.de" \
+        --registration-token "{{ gitlab_token }}" \
+        --executor "docker" \
+        --docker-image alpine:latest \
+        --tag-list "sergei.miasnikov_aws" \
+        --run-untagged="false"
+      when: runner_registered is failed
+
+    - name: "Start and enable gitlab-runner"
+      ansible.builtin.service:
+        name: gitlab-runner
+        state: started
+        enabled: true
